@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
@@ -18,18 +17,13 @@ public class Ball extends Rectangle {
 
 		vX = 8;
 		vY = 0;
+
 	}
 
 	public void draw(Graphics2D g) {
 		g.setColor(GameScreen.THEME);
 		g.fillRect(x, y, width, height);
 		
-		g.setColor(Color.RED);
-		g.fill(getLowerBound());
-		g.fill(getUpperBound());
-		g.fill(getLeftBound());
-		g.fill(getRightBound());
-
 	}
 
 	public void update() {
@@ -42,28 +36,9 @@ public class Ball extends Rectangle {
 		if (vY < -maxVelocity) {
 			vY = -maxVelocity;
 		}
-		checkBounds();
 	}
 
-	public void checkBounds() {
-		if (y >= GameScreen.HEIGHT - height - GameScreen.borderLength) {
-			y = GameScreen.HEIGHT - height - GameScreen.borderLength;
-			vY = -vY;
-		}
-		if (y <= GameScreen.borderLength) {
-			y = GameScreen.borderLength;
-			vY = -vY;
-		}
-
-		if (x >= GameScreen.WIDTH - width) {
-			x = GameScreen.WIDTH - width;
-			vX = -vX;
-		}
-		if (x <= 0) {
-			x = 0;
-			vX = -vX;
-		}
-	}
+	
 
 	public Rectangle getLowerBound() {
 		return new Rectangle(x, y + height - 2, width, 2);

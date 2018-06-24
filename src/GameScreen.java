@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import javax.swing.JPanel;
 
@@ -20,6 +21,7 @@ public class GameScreen extends JPanel implements Runnable, KeyListener {
 	
 	public static final Color THEME = Color.white;
 	
+	private int p1Score,p2Score;
 	
 	BufferedImage image;
 
@@ -45,13 +47,7 @@ public class GameScreen extends JPanel implements Runnable, KeyListener {
 		setFocusable(true);
 		requestFocus();
 
-		g = (Graphics2D) getGraphics();
-
-		p1 = new Player(35, HEIGHT/2-40, 15, 80);
-		p2 = new Player(WIDTH-35-15, HEIGHT/2-40, 15, 80);
-		ball = new Ball(WIDTH/2-10, HEIGHT/2-10  , 20, 20);
-		
-		pause = false;
+		gameReset();
 
 	}
 
@@ -71,24 +67,87 @@ public class GameScreen extends JPanel implements Runnable, KeyListener {
 			ball.setvY(-ball.getvY() + p1.getvY());
 		}
 	}
+	
+	public void gameReset() {
+		g = (Graphics2D) getGraphics();
+
+		p1 = new Player(35, HEIGHT/2-40, 15, 80);
+		p2 = new Player(WIDTH-35-15, HEIGHT/2-40, 15, 80);
+		ball = new Ball(WIDTH/2-10, HEIGHT/2-10  , 20, 20);
+		
+		pause = false;
+		
+		p1Score=0;
+		p2Score=0;
+	}
+	
+	public void checkBounds() {
+		if (ball.y >= HEIGHT - ball.height - borderLength) {
+			ball.y = HEIGHT - ball.height - borderLength;
+			ball.setvY(-ball.getvY());
+		}
+		if (ball.y <= borderLength) {
+			ball.y = borderLength;
+			ball.setvY(-ball.getvY());
+		}
+
+		if (ball.x >= WIDTH + 10) {
+			p1Score++;
+			resetCoordinates();
+		}
+		if (ball.x <= -30) {
+			p2Score++;
+			resetCoordinates();
+		}
+	}	
+	
+	public void checkScore() {
+		if(p1Score==5) {
+			System.out.println("Player 1 Wins!");
+			gameReset();
+			pause = true;
+		}
+		if(p2Score == 5) {
+			System.out.println("Player 2 Wins!");
+			gameReset();
+			pause=true;
+		}
+	}
+	
+	public void resetCoordinates() {
+		ball.x = (WIDTH-15)/2;
+		ball.y= (HEIGHT-40)/2;
+		
+		Random random = new Random();
+		int randomVY = random.nextInt(5)-5;
+		
+		ball.setvY(randomVY);
+		
+		System.out.printf("\tScoreboard\nPlayer 1\t\tPlayer 2\n%d\t\t%d\n",p1Score,p2Score);
+	}
 
 	public void update() {
 		p1.update();
 		p2.update();
 		ball.update();
+		checkBounds();
 		detectCollision(p1);
 		detectCollision(p2);
+		checkScore();
 	}
 
 	public void draw() {
 		g.setColor(Color.black);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
+		for (int i = 0; i < 25; i++) {
+			g.setColor(THEME);
+			g.fillRect((WIDTH-12)/2, 8+7*i+12*i, 6, 12);
+		}
+		
 		g.setColor(THEME);
 		g.fillRect(borderLength, 0, WIDTH-2*borderLength, borderLength);
 		g.fillRect(borderLength, HEIGHT-borderLength, WIDTH-2*borderLength, borderLength);
-		
-	//	for()
 
 		p1.draw(g);
 		p2.draw(g);
@@ -138,6 +197,7 @@ public class GameScreen extends JPanel implements Runnable, KeyListener {
 					wait = 5;
 				try {
 					Thread.sleep(wait);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
