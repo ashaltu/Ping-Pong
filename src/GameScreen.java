@@ -119,8 +119,8 @@ public class GameScreen extends JPanel implements Runnable, KeyListener {
 		ball.y= (HEIGHT-40)/2;
 		
 		Random random = new Random();
-		int randomVY = random.nextInt(5)-5;
-		
+		int randomVY = random.nextInt(10)-5;
+
 		ball.setvY(randomVY);
 		
 		System.out.printf("\tScoreboard\nPlayer 1\t\tPlayer 2\n%d\t\t%d\n",p1Score,p2Score);
