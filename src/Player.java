@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -6,8 +5,16 @@ import java.awt.event.KeyListener;
 
 public class Player extends Rectangle implements KeyListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int vY;
 	private boolean isUp, isDown;
+
+	private double accelaration = 1;
+	private int maxVelocityY = 12;
+	private double gravity = .981;
 
 	public Player(int x, int y, int width, int height) {
 		super(x, y, width, height);
@@ -15,19 +22,29 @@ public class Player extends Rectangle implements KeyListener {
 	}
 
 	public void draw(Graphics2D g) {
-		g.setColor(Color.black);
+		g.setColor(GameScreen.THEME);
 		g.fill(this);
+		
 	}
 
 	public void update() {
-		y += vY;
-		vY = 0;
+		if (vY > maxVelocityY) {
+			vY = maxVelocityY;
+		}
+		if (vY < -maxVelocityY) {
+			vY = -maxVelocityY;
+		}
+
 		if (isUp) {
-			vY = -5;
+			vY -= accelaration;
+		} else if (isDown) {
+			vY += accelaration;
+		} else {
+			vY*=gravity;
 		}
-		if (isDown) {
-			vY = 5;
-		}
+				
+		y += vY;
+		
 		checkBounds();
 
 	}
@@ -68,19 +85,23 @@ public class Player extends Rectangle implements KeyListener {
 	}
 
 	public Rectangle getLowerBound() {
-		return new Rectangle(2 + x, y + height - 2, width - 4, 2);
+		return new Rectangle(x, y + height - 2, width, 2);
 	}
 
 	public Rectangle getUpperBound() {
-		return new Rectangle(2 + x, y, width - 4, 2);
+		return new Rectangle(x, y, width, 2);
 	}
 
 	public Rectangle getRightBound() {
-		return new Rectangle(x + width - 2, y, 2, height);
+		return new Rectangle(x + width - 7, y+2, 7, height-4);
 	}
 
 	public Rectangle getLeftBound() {
-		return new Rectangle(x, y, 2, height);
+		return new Rectangle(x, y+2, 7, height-4);
+	}
+
+	public int getvY() {
+		return vY;
 	}
 
 }
